@@ -44,14 +44,4 @@ export class SubjectController {
   like(@Param('id') id: string, @Request() req) {
     return this.subjectService.like(id, req?.user?.userId);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectService.update(id, updateSubjectDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subjectService.remove(id);
-  }
 }

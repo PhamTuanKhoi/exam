@@ -78,19 +78,11 @@ export class SubjectService {
   }
 
   findAll() {
-    return `This action returns all subject`;
+    return this.model.find();
   }
 
   findById(id: string) {
     return this.model.findById(id).lean();
-  }
-
-  update(id: string, updateSubjectDto: UpdateSubjectDto) {
-    return `This action updates a #${id} subject`;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} subject`;
   }
 
   async isModelExist(id, isOptional = false, msg = '') {
