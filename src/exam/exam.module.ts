@@ -12,5 +12,6 @@ import { SubjectModule } from 'src/subject/subject.module';
   ],
   controllers: [ExamController],
   providers: [ExamService],
+  exports: [ExamService],
 })
 export class ExamModule {}

@@ -46,18 +46,18 @@ export class ExamService {
   }
 
   findAll() {
-    return `This action returns all exam`;
+    return this.model.find();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} exam`;
+  findById(id: string) {
+    return this.model.findById(id).lean();
   }
 
-  update(id: string, updateExamDto: UpdateExamDto) {
-    return `This action updates a #${id} exam`;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} exam`;
+  async isModelExist(id, isOptional = false, msg = '') {
+    if (isOptional && !id) return;
+    const errorMessage = msg || `${Exam.name} not found`;
+    const isExist = await this.findById(id);
+    if (!isExist) throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
+    return isExist;
   }
 }
