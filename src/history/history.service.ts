@@ -1,26 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
+import { History } from './entities/history.entity';
 
 @Injectable()
 export class HistoryService {
+  constructor(@InjectModel(History.name) private model: Model<History>) {}
+
   create(createHistoryDto: CreateHistoryDto) {
-    return 'This action adds a new history';
-  }
-
-  findAll() {
-    return `This action returns all history`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} history`;
-  }
-
-  update(id: number, updateHistoryDto: UpdateHistoryDto) {
-    return `This action updates a #${id} history`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} history`;
+    return this.model.create(createHistoryDto);
   }
 }

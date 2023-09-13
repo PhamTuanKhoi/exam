@@ -14,5 +14,6 @@ import { SubjectModule } from 'src/subject/subject.module';
   ],
   controllers: [QuestionController],
   providers: [QuestionService],
+  exports: [QuestionService],
 })
 export class QuestionModule {}

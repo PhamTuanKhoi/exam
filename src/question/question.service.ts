@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SubjectService } from 'src/subject/subject.service';
@@ -45,6 +51,10 @@ export class QuestionService {
 
   findAll() {
     return this.model.find();
+  }
+
+  findById(id: string) {
+    return this.model.findById(id);
   }
 
   async randomQuestion(examId: string) {
@@ -101,5 +111,13 @@ export class QuestionService {
 
   findOne(id: string) {
     return `This action returns a #${id} question`;
+  }
+
+  async isModelExist(id, isOptional = false, msg = '') {
+    if (isOptional && !id) return;
+    const errorMessage = msg || `${Question.name} not found`;
+    const isExist = await this.findById(id);
+    if (!isExist) throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
+    return isExist;
   }
 }
