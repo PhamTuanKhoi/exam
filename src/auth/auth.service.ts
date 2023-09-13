@@ -51,4 +51,18 @@ export class AuthService {
   async register(registerUserDto: RegisterUserDto) {
     return this.userService.create(registerUserDto);
   }
+
+  async verifyJwt(jwt: string) {
+    try {
+      if (!jwt) throw new UnauthorizedException();
+
+      const { sub, exp } = await this.jwtService.verifyAsync(jwt);
+
+      const data = await this.userService.findById(sub);
+
+      return { user: data, exp };
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
 }

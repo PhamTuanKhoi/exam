@@ -9,6 +9,9 @@ import { SubjectModule } from './subject/subject.module';
 import { QuestionModule } from './question/question.module';
 import { JoinModule } from './join/join.module';
 import { HistoryModule } from './history/history.module';
+import { RolesGuard } from './auth/guard/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RoleModule } from './auth/guard/role.module';
 
 @Module({
   imports: [
@@ -22,8 +25,15 @@ import { HistoryModule } from './history/history.module';
     QuestionModule,
     JoinModule,
     HistoryModule,
+    RoleModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

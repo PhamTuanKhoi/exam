@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { UserRoleEnum } from 'src/user/dto/user-role.enum';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
 
 @Controller('subject')
 export class SubjectController {
@@ -12,23 +25,25 @@ export class SubjectController {
     return this.subjectService.create(createSubjectDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
+  @Roles(UserRoleEnum.ADMIN)
   findAll() {
     return this.subjectService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.subjectService.findOne(+id);
+    return this.subjectService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectService.update(+id, updateSubjectDto);
+    return this.subjectService.update(id, updateSubjectDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.subjectService.remove(+id);
+    return this.subjectService.remove(id);
   }
 }

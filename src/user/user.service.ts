@@ -17,7 +17,7 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(@InjectModel(User.name) private modle: Model<User>) {}
+  constructor(@InjectModel(User.name) private model: Model<User>) {}
 
   async create(registerUserDto: RegisterUserDto) {
     try {
@@ -31,7 +31,7 @@ export class UserService {
         10,
       );
 
-      const created = await this.modle.create({
+      const created = await this.model.create({
         ...registerUserDto,
       });
 
@@ -48,11 +48,11 @@ export class UserService {
   }
 
   findById(id: string) {
-    return this.modle.findById(id).lean();
+    return this.model.findById(id).lean();
   }
 
   async findByEmail(email: string) {
-    return await this.modle.findOne({ email }).lean();
+    return this.model.findOne({ email }).select('+password').lean();
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
