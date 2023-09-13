@@ -21,6 +21,10 @@ export class UserService {
     return this.modle.findById(id).lean();
   }
 
+  async findByEmail(email: string) {
+    return await this.modle.findOne({ email });
+  }
+
   update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
