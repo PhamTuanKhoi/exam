@@ -42,8 +42,8 @@ export class SubjectService {
     return `This action returns all subject`;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} subject`;
+  findById(id: string) {
+    return this.model.findById(id).lean();
   }
 
   update(id: string, updateSubjectDto: UpdateSubjectDto) {
@@ -52,5 +52,13 @@ export class SubjectService {
 
   remove(id: string) {
     return `This action removes a #${id} subject`;
+  }
+
+  async isModelExist(id, isOptional = false, msg = '') {
+    if (isOptional && !id) return;
+    const errorMessage = msg || `${Subject.name} not found`;
+    const isExist = await this.findById(id);
+    if (!isExist) throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
+    return isExist;
   }
 }

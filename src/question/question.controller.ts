@@ -1,13 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { UserRoleEnum } from 'src/user/dto/user-role.enum';
 
 @Controller('question')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.ADMIN)
   create(@Body() createQuestionDto: CreateQuestionDto) {
     return this.questionService.create(createQuestionDto);
   }
@@ -19,16 +33,19 @@ export class QuestionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.questionService.findOne(+id);
+    return this.questionService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuestionDto: UpdateQuestionDto) {
-    return this.questionService.update(+id, updateQuestionDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateQuestionDto: UpdateQuestionDto,
+  ) {
+    return this.questionService.update(id, updateQuestionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.questionService.remove(+id);
+    return this.questionService.remove(id);
   }
 }

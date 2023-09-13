@@ -12,5 +12,6 @@ import { APP_GUARD } from '@nestjs/core';
   ],
   controllers: [SubjectController],
   providers: [SubjectService],
+  exports: [SubjectService],
 })
 export class SubjectModule {}
