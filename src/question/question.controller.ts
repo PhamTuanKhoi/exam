@@ -32,10 +32,10 @@ export class QuestionController {
     return this.questionService.findAll();
   }
 
-  @Get('random')
+  @Get('random/:examId')
   @UseGuards(JwtAuthGuard)
   @Roles(UserRoleEnum.USER)
-  randomQuestion(@Request() req) {
-    return this.questionService.randomQuestion(req?.user?.userId);
+  randomQuestion(@Param('examId') examId: string) {
+    return this.questionService.randomQuestion(examId);
   }
 }

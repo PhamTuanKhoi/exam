@@ -47,7 +47,7 @@ export class QuestionService {
     return this.model.find();
   }
 
-  async randomQuestion(userId: string) {
+  async randomQuestion(examId: string) {
     const question = await this.model.aggregate([
       {
         $lookup: {
@@ -65,14 +65,28 @@ export class QuestionService {
       },
       {
         $unwind: {
-          path: '$subject.favourites',
+          path: '$subject',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'exams',
+          localField: 'subject._id',
+          foreignField: 'subject',
+          as: 'exam',
+        },
+      },
+      {
+        $unwind: {
+          path: '$exam',
           preserveNullAndEmptyArrays: true,
         },
       },
       {
         $match: {
           $expr: {
-            $eq: ['$subject.favourites', { $toObjectId: userId }],
+            $eq: ['$exam._id', { $toObjectId: examId }],
           },
         },
       },

@@ -6,28 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { JoinService } from './join.service';
 import { CreateJoinDto } from './dto/create-join.dto';
 import { UpdateJoinDto } from './dto/update-join.dto';
 import { UserService } from 'src/user/user.service';
 import { ExamService } from 'src/exam/exam.service';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { UserRoleEnum } from 'src/user/dto/user-role.enum';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('join')
 export class JoinController {
-  constructor(
-    private readonly joinService: JoinService,
-    private userService: UserService,
-    private examService: ExamService,
-  ) {}
+  constructor(private readonly joinService: JoinService) {}
 
   @Post()
-  async create(@Body() createJoinDto: CreateJoinDto) {
-    await Promise.all([
-      this.userService.isModelExist(createJoinDto.user),
-      this.examService.isModelExist(createJoinDto.exam),
-    ]);
-
-    return this.joinService.create(createJoinDto);
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.USER)
+  async create(@Body() createJoinDto: CreateJoinDto, @Request() req) {
+    return this.joinService.create(createJoinDto, req.user.userId);
   }
 }

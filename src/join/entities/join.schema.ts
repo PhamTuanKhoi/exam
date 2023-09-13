@@ -9,7 +9,7 @@ export type JoinDocument = HydratedDocument<Join>;
 
 @Schema()
 export class Join {
-  @Prop()
+  @Prop({ default: 0 })
   scores: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
