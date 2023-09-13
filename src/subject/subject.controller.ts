@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
@@ -35,6 +36,13 @@ export class SubjectController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.subjectService.findById(id);
+  }
+
+  @Patch('like/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.USER)
+  like(@Param('id') id: string, @Request() req) {
+    return this.subjectService.like(id, req?.user?.userId);
   }
 
   @Patch(':id')

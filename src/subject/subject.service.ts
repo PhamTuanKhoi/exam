@@ -38,6 +38,45 @@ export class SubjectService {
     return this.model.findOne({ name }).lean();
   }
 
+  async like(id: string, userId: string) {
+    try {
+      const subject = await this.isModelExist(id);
+
+      const like = subject?.favourites?.map(
+        (item) => userId === item.toString(),
+      );
+
+      if (like?.length === 0) {
+        const updated = await this.model.findByIdAndUpdate(
+          id,
+          {
+            favourites: [...subject?.favourites, userId],
+          },
+          { new: true },
+        );
+
+        this.logger.log(`update like subject success`, updated?._id);
+        return updated;
+      } else {
+        const updated = await this.model.findByIdAndUpdate(
+          id,
+          {
+            favourites: subject?.favourites?.filter(
+              (i) => i.toString() !== userId,
+            ),
+          },
+          { new: true },
+        );
+
+        this.logger.log(`update like subject success`, updated?._id);
+        return updated;
+      }
+    } catch (error) {
+      this.logger.error(error?.message, error.stack);
+      throw new BadRequestException(error?.message);
+    }
+  }
+
   findAll() {
     return `This action returns all subject`;
   }
