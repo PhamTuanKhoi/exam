@@ -19,6 +19,12 @@ export class UserService {
 
   constructor(@InjectModel(User.name) private model: Model<User>) {}
 
+  // {
+  //   "name": "Pham Tuan Thanh",
+  //   "email": "thanh@gmail.com",
+  //   "password": "1234",
+  //   "role": "user"
+  // }
   async create(registerUserDto: RegisterUserDto) {
     try {
       const email_exist = await this.findByEmail(registerUserDto.email);
@@ -43,6 +49,22 @@ export class UserService {
     }
   }
 
+  async block(id: string) {
+    try {
+      const user = await this.isModelExist(id);
+
+      const updated = await this.model.findByIdAndUpdate(id, {
+        block: !user.block,
+      });
+
+      this.logger.log(`block user ${updated?.block} success`, updated?._id);
+      return updated;
+    } catch (error) {
+      this.logger.error(error?.message, error.stack);
+      throw new BadRequestException(error?.message);
+    }
+  }
+
   findAll() {
     return `This action returns all user`;
   }
@@ -61,5 +83,13 @@ export class UserService {
 
   remove(id: string) {
     return `This action removes a #${id} user`;
+  }
+
+  async isModelExist(id, isOptional = false, msg = '') {
+    if (isOptional && !id) return;
+    const errorMessage = msg || `${User.name} not found`;
+    const isExist = await this.findById(id);
+    if (!isExist) throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
+    return isExist;
   }
 }
