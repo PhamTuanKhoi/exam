@@ -5,7 +5,9 @@ import { User } from 'src/user/schema/user.schema';
 
 export type SubjectDocument = HydratedDocument<Subject>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+})
 export class Subject {
   @Prop()
   name: string;

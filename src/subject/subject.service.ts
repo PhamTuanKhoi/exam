@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateSubjectDto } from './dto/create-subject.dto';
@@ -13,6 +19,11 @@ export class SubjectService {
 
   async create(createSubjectDto: CreateSubjectDto) {
     try {
+      const subject_exist_name = await this.findByName(createSubjectDto.name);
+
+      if (subject_exist_name)
+        throw new HttpException('name subject is exist', HttpStatus.CONFLICT);
+
       const created = await this.model.create(createSubjectDto);
 
       this.logger.log(`Register user success`, created?._id);
@@ -21,6 +32,10 @@ export class SubjectService {
       this.logger.error(error?.message, error.stack);
       throw new BadRequestException(error?.message);
     }
+  }
+
+  async findByName(name: string) {
+    return this.model.findOne({ name }).lean();
   }
 
   findAll() {

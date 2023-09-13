@@ -21,13 +21,13 @@ export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.ADMIN)
   create(@Body() createSubjectDto: CreateSubjectDto) {
     return this.subjectService.create(createSubjectDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  @Roles(UserRoleEnum.ADMIN)
   findAll() {
     return this.subjectService.findAll();
   }
