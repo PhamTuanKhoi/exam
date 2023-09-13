@@ -1,26 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { SubjectService } from 'src/subject/subject.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
+import { Exam } from './schema/exam.schema';
 
 @Injectable()
 export class ExamService {
-  create(createExamDto: CreateExamDto) {
-    return 'This action adds a new exam';
+  private readonly logger = new Logger(ExamService.name);
+
+  constructor(
+    @InjectModel(Exam.name) private model: Model<Exam>,
+    private subjectService: SubjectService,
+  ) {}
+
+  async create(createExamDto: CreateExamDto) {
+    try {
+      await this.subjectService.isModelExist(createExamDto.subject);
+
+      const exam_exist_name = await this.findByName(createExamDto.name);
+
+      if (exam_exist_name)
+        throw new HttpException('name subject is exist', HttpStatus.CONFLICT);
+
+      const created = await this.model.create(createExamDto);
+
+      this.logger.log(`created a user by id #${created?._id}`);
+
+      return created;
+    } catch (error) {
+      this.logger.error(error?.message, error.stack);
+      throw new BadRequestException(error?.message);
+    }
+  }
+
+  async findByName(name: string) {
+    return this.model.findOne({ name }).lean();
   }
 
   findAll() {
     return `This action returns all exam`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} exam`;
   }
 
-  update(id: number, updateExamDto: UpdateExamDto) {
+  update(id: string, updateExamDto: UpdateExamDto) {
     return `This action updates a #${id} exam`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} exam`;
   }
 }

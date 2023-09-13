@@ -1,13 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { UserRoleEnum } from 'src/user/dto/user-role.enum';
 
 @Controller('exam')
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.ADMIN)
   create(@Body() createExamDto: CreateExamDto) {
     return this.examService.create(createExamDto);
   }
@@ -19,16 +33,16 @@ export class ExamController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.examService.findOne(+id);
+    return this.examService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateExamDto: UpdateExamDto) {
-    return this.examService.update(+id, updateExamDto);
+    return this.examService.update(id, updateExamDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.examService.remove(+id);
+    return this.examService.remove(id);
   }
 }
